@@ -9,8 +9,20 @@
     </el-input>
     <el-button type="success" plain @click="addNewItem">add</el-button>
   </div>
-  <el-progress class="finishRate" type="circle" :percentage="this.finishRate">
-  </el-progress>
+  <el-tooltip placement="top">
+    <template #content>
+      Long press the pie chart for three seconds to delete all items<br />
+      Long press the task for one second to delete the current task
+    </template>
+    <el-progress
+      class="finishRate"
+      type="circle"
+      :percentage="this.finishRate"
+      @mousedown="mouseDownPie"
+      @mouseup="mouseUpPie"
+    >
+    </el-progress>
+  </el-tooltip>
   <div class="itemsDisplayArea">
     <div>
       <div class="workItemWrap" v-for="item in workItems" :key="item.key">
@@ -45,11 +57,37 @@
 
 <script>
 import { workItemStatus } from "../constant";
+import fs from "fs";
+
 export default {
   name: "TodayIsEverything",
   props: {},
   created() {
     this.workItemStatus = workItemStatus;
+    try {
+      const data = fs.readFileSync("C:/todolistStore.txt", "utf8");
+      this.workItems = JSON.parse(data);
+      this.toDoItemCount = this.workItems.filter(
+        (item) => item.status == workItemStatus.needToBeDone
+      ).length;
+      this.finishedItemCount = this.workItems.filter(
+        (item) => item.status == workItemStatus.finished
+      ).length;
+    } catch (err) {
+      console.error(err);
+    }
+  },
+  updated() {
+    try {
+      const data = fs.writeFileSync(
+        "C:/todolistStore.txt",
+        JSON.stringify(this.workItems)
+      );
+      console.log(this.workItems);
+      //文件写入成功。
+    } catch (err) {
+      console.error(err);
+    }
   },
   data() {
     return {
@@ -87,6 +125,9 @@ export default {
     mouseDownItem() {
       this.lastestMouseDownTime = new Date();
     },
+    mouseDownPie() {
+      this.lastestMouseDownPieTime = new Date();
+    },
     mouseupItem(item, event) {
       this.lastestMouseUpTime = new Date();
       //长按删除，点击切换状态
@@ -99,8 +140,8 @@ export default {
         item.status = this.workItemStatus.deleted;
         item.key = new Date().getTime();
         this.$message({
-          message: `删除任务--${item.value}`,
-          type: 'success'
+          message: `Delete task -- ${item.value}`,
+          type: "success",
         });
       } else {
         if (item.status === this.workItemStatus.needToBeDone) {
@@ -114,6 +155,17 @@ export default {
         }
         item.key = new Date().getTime();
         event.preventDefault();
+      }
+    },
+    mouseUpPie() {
+      if (new Date() - this.lastestMouseDownPieTime > 3000) {
+        this.workItems = [];
+        this.toDoItemCount = 0;
+        this.finishedItemCount = 0;
+        this.$message({
+          message: "All tasks has been deleted",
+          type: "success",
+        });
       }
     },
   },
