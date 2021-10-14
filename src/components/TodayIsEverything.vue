@@ -159,13 +159,16 @@ export default {
     },
     mouseUpPie() {
       if (new Date() - this.lastestMouseDownPieTime > 3000) {
-        this.workItems = [];
+        
         this.toDoItemCount = 0;
         this.finishedItemCount = 0;
-        this.$message({
-          message: "All tasks has been deleted",
-          type: "success",
-        });
+        if (this.workItems.length > 0) {
+          this.$message({
+            message: "All tasks has been deleted",
+            type: "success",
+          });
+        }
+        this.workItems = [];
       }
     },
   },
