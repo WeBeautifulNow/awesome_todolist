@@ -20,11 +20,11 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,
-      builderOptions: {
-        win: {
-          requestedExecutionLevel: "highestAvailable"
-        }
-      }
+      // builderOptions: {
+      //   win: {
+      //     requestedExecutionLevel: "highestAvailable"
+      //   }
+      // }
     }
   }
 };

@@ -63,9 +63,12 @@ export default {
   name: "TodayIsEverything",
   props: {},
   created() {
+    const newProcess = JSON.parse(JSON.stringify(process));
+    const USER_HOME = newProcess.env.HOME || newProcess.env.USERPROFILE;
+    this.dataStoredPath = `${USER_HOME}\\AppData\\Local\\todolistStore.txt`;
     this.workItemStatus = workItemStatus;
     try {
-      const data = fs.readFileSync("C:/todolistStore.txt", "utf8");
+      const data = fs.readFileSync(this.dataStoredPath, "utf8");
       this.workItems = JSON.parse(data);
       this.toDoItemCount = this.workItems.filter(
         (item) => item.status == workItemStatus.needToBeDone
@@ -80,10 +83,9 @@ export default {
   updated() {
     try {
       const data = fs.writeFileSync(
-        "C:/todolistStore.txt",
+        this.dataStoredPath,
         JSON.stringify(this.workItems)
       );
-      console.log(this.workItems);
       //文件写入成功。
     } catch (err) {
       console.error(err);
