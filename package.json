@@ -1,7 +1,7 @@
 {
     "version": "0.1.0",
     "author": "zheta",
-    "name": "electron-vue-todolist",
+    "name": "todo",
     "private": true,
     "scripts": {
         "serve": "vue-cli-service serve",

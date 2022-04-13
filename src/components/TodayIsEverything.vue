@@ -12,7 +12,8 @@
   <el-tooltip placement="top">
     <template #content>
       Long press the pie chart for three seconds to delete all items<br />
-      Long press the task for one second to delete the current task
+      Long press the task for one second to delete the current task <br />
+      Double click the pie chart can delete all finished task
     </template>
     <el-progress
       class="finishRate"
@@ -20,6 +21,7 @@
       :percentage="this.finishRate"
       @mousedown="mouseDownPie"
       @mouseup="mouseUpPie"
+      @dblclick="doubleClick"
     >
     </el-progress>
   </el-tooltip>
@@ -142,7 +144,7 @@ export default {
         item.status = this.workItemStatus.deleted;
         item.key = new Date().getTime();
         this.$message({
-          message: `Delete task -- ${item.value}`,
+          message: `Delete task -- ${item.value} -- success`,
           type: "success",
         });
       } else {
@@ -161,17 +163,42 @@ export default {
     },
     mouseUpPie() {
       if (new Date() - this.lastestMouseDownPieTime > 3000) {
-        
         this.toDoItemCount = 0;
         this.finishedItemCount = 0;
         if (this.workItems.length > 0) {
           this.$message({
-            message: "All tasks has been deleted",
+            message: "All tasks have been deleted",
             type: "success",
           });
         }
         this.workItems = [];
       }
+    },
+    doubleClick() {
+      this.$confirm("All finished tasks will be deleted", "warning", {
+        confirmButtonText: "delete",
+        cancelButtonText: "cancel",
+        type: "warning",
+      })
+        .then(() => {
+          this.workItems.forEach((item) => {
+            if (item.status === this.workItemStatus.finished) {
+              item.status = this.workItemStatus.deleted;
+              item.key = new Date().getTime();
+            }
+          });
+          this.finishedItemCount = 0;
+          this.$message({
+            type: "success",
+            message: "All finished tasks have been deleted!",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "Canceled",
+          });
+        });
     },
   },
 };

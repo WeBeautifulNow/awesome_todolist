@@ -20,11 +20,12 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,
-      // builderOptions: {
-      //   win: {
-      //     requestedExecutionLevel: "highestAvailable"
-      //   }
-      // }
+      builderOptions: {
+        productName: "todo",
+        win: {
+          icon: 'public/icon/todo256.ico'
+        }
+      }
     }
   }
 };

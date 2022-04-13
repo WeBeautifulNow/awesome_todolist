@@ -18,6 +18,8 @@ async function createWindow() {
     height: 800,
     autoHideMenuBar: true,
     opacity: 1,
+    icon: `${__static}/icon/todo64.ico`,
+    title: "todo",
     webPreferences: {
 
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -30,7 +32,7 @@ async function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    // win.webContents.openDevTools({ mode: 'detach' })
+    win.webContents.openDevTools({ mode: 'detach' })
   } else {
     createProtocol('app')
     // Load the index.html when not in development
