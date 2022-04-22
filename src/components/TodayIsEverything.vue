@@ -59,6 +59,7 @@
 
 <script>
 import { workItemStatus } from "../constant";
+import { getMacAppDir } from "../Helper"
 import fs from "fs";
 
 export default {
@@ -67,10 +68,17 @@ export default {
   created() {
     const newProcess = JSON.parse(JSON.stringify(process));
     const USER_HOME = newProcess.env.HOME || newProcess.env.USERPROFILE;
-    this.dataStoredPath = `${USER_HOME}\\AppData\\Local\\todolistStore.txt`;
+    if (newProcess.platform == 'darwin') {// mac
+      let dir = getMacAppDir();
+      this.dataStoredPath = `${dir}/todolistStore.txt`;
+    } else {
+      this.dataStoredPath = `${USER_HOME}\\AppData\\Local\\todolistStore.txt`;
+    }
+    console.log(this.dataStoredPath);
     this.workItemStatus = workItemStatus;
     try {
       const data = fs.readFileSync(this.dataStoredPath, "utf8");
+      console.log(this.dataStoredPath);
       this.workItems = JSON.parse(data);
       this.toDoItemCount = this.workItems.filter(
         (item) => item.status == workItemStatus.needToBeDone
@@ -84,10 +92,11 @@ export default {
   },
   updated() {
     try {
-      const data = fs.writeFileSync(
+      fs.writeFileSync(
         this.dataStoredPath,
         JSON.stringify(this.workItems)
       );
+      console.log(this.dataStoredPath);
       //文件写入成功。
     } catch (err) {
       console.error(err);
